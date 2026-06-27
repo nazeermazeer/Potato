@@ -32,6 +32,7 @@ class PotatoBot(commands.Bot):
     async def on_message(self, message):
         if str(bot.user.id) in message.content:
             await message.add_reaction("❌")
+            await change_status(discord.Status.dnd)
 
 
 bot = PotatoBot()
@@ -56,11 +57,11 @@ async def on_ready() -> None:
         change_status.start()
 
     
-@tasks.loop(seconds=1)
-async def change_status() -> None:
+@tasks.loop(seconds=5)
+async def change_status(status=discord.Status.online) -> None:
     relative_time = humanize.naturaltime(time)
     await bot.change_presence(
-    status=discord.Status.online,
+    status=status,
     activity=discord.CustomActivity(name=relative_time)
 )
     
