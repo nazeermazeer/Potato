@@ -6,13 +6,14 @@ from discord.ext import commands
 import humanize
 from dotenv import load_dotenv
 from discord.ext import tasks
-
-
+import structlog
 
 load_dotenv()
 
 DISCORD_TOKEN = os.getenv("DISCORD_TOKEN")
 COMMAND_PREFIX = os.getenv("COMMAND_PREFIX", "!")
+
+logger = structlog.get_logger()
 
 
 class PotatoBot(commands.Bot):
@@ -51,7 +52,7 @@ async def on_ready() -> None:
     time = datetime.fromtimestamp(timestamp, tz=timezone.utc)
 
 
-    logging.info("Logged in as %s (ID: %s)", bot.user, bot.user.id)
+    logger.info("connected")
     
     if not change_status.is_running():
         change_status.start()
