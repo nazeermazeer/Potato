@@ -1,9 +1,12 @@
 import logging
 import os
-
+from datetime import datetime, timezone
 import discord
 from discord.ext import commands
+import humanize
 from dotenv import load_dotenv
+from discord.ext import tasks
+
 
 
 load_dotenv()
@@ -34,11 +37,29 @@ bot = PotatoBot()
 async def on_ready() -> None:
     if bot.user is None:
         return
+    
+    datestr = "2026-06-26 23:42:27"
+    dateformat = "%Y-%m-%d %H:%M:%S"
+    dt = datetime.strptime(datestr, dateformat)
+    timestamp = int(dt.timestamp())
+    global time
+    time = datetime.fromtimestamp(timestamp, tz=timezone.utc)
+
 
     logging.info("Logged in as %s (ID: %s)", bot.user, bot.user.id)
+    
+    if not change_status.is_running():
+        change_status.start()
+
+    
+@tasks.loop(seconds=1)
+async def change_status() -> None:
+    relative_time = humanize.naturaltime(time)
     await bot.change_presence(
-        activity=discord.Game(name=f"{COMMAND_PREFIX}ping"),
-    )
+    status=discord.Status.online,
+    activity=discord.CustomActivity(name=relative_time)
+)
+    
 
 
 @bot.command(name="ping")
