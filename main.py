@@ -39,18 +39,27 @@ class PotatoBot(commands.Bot):
         elif message.author.id != bot.user.id:
             checker = Checker()
             corrections = checker.checkText(message.content)
-            desc = "```❌ "
+            desc = "❌ "
+            feedbacklen = 20
             for i, correction in enumerate(corrections):
-                location = " "
-                correctiondesc = ""
-                for _ in range(correction.offset):
-                    location = f"{location} "
-                for _ in range(correction.error_length):
-                    location = f"{location}^"
-                msg = textwrap.fill(correction.message, width=50)
-                correctiondesc = f"\"{message.content}\"\n{location}\n➡️ {msg}\n\n"
+                # location = " "
+                # correctiondesc = ""
+                # for _ in range(correction.offset):
+                #     location = f"{location} "
+                # for _ in range(correction.error_length):
+                #     location = f"{location}^"
+                # msg = textwrap.fill(correction.message, width=50)
+                if correction.offset <= feedbacklen:
+                    msg = message.content
+                    msg = msg[:correction.offset] + "__**" + msg[correction.offset:correction.offset + correction.error_length] + "**__" + msg[correction.offset + correction.error_length:]
+                    msg = "\"" + msg[0:(min(correction.offset + feedbacklen, correction.offset + correction.error_length + feedbacklen))] + "\"..."
+                else:
+                    msg = message.content
+                    msg = msg[:correction.offset] + "__**" + msg[correction.offset:correction.offset + correction.error_length] + "**__" + msg[correction.offset + correction.error_length:]
+                    msg = "...\"" + msg[int(correction.offset - (feedbacklen)):int(min(correction.offset + feedbacklen, correction.offset + correction.error_length + feedbacklen))] + "\"..."
+                correctiondesc = f"{msg}\n➡️ {correction.message}\n\n"
                 desc += correctiondesc.replace('\n', '\n❌ ')
-            desc += f"\n\"{message.content}\" 🥀 🔪 😭\n\"{checker.getCorrectedText(message.content)}\" 🌈 ❤️ 😀```"
+            desc += f"\n\"{message.content}\" 🥀 🔪 😭\n\"{checker.getCorrectedText(message.content)}\" 🌈 ❤️ 😀"
             embed = discord.Embed(
                 title=f"{message.author.name}, please check your sentence.",
                 description=desc,
