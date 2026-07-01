@@ -38,7 +38,7 @@ def checkEmojis(value: str) -> list[CustomMatch]:
     return [
         CustomMatch(
             rule_id="NO_EMOJIS",
-            message="Using emojis in formal academic writing is considered non-professional.",
+            message="Using emojis in formal academic writing is unprofessional.",
             context=value,
             replacements=[""],
             offset=match["match_start"],
