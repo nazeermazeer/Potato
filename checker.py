@@ -1,5 +1,6 @@
 import language_tool_python
 from dataclasses import dataclass
+import emoji
 
 tool = language_tool_python.LanguageTool('en-US')
 tool.picky = True
@@ -16,7 +17,7 @@ class CustomMatch:
     
 
 
-def check_sentence_punctuation(value: str) -> list[CustomMatch]:
+def checkPunctuation(value: str) -> list[CustomMatch]:
     stripped = value.strip()
     if not stripped or stripped[-1] in ".!?":
         return []
@@ -27,25 +28,44 @@ def check_sentence_punctuation(value: str) -> list[CustomMatch]:
             message="This sentence does not end with punctuation.",
             context=value,
             replacements=[f"{stripped}."],
-            offset = len(value),
-            error_length = 1
+            offset=len(value),
+            error_length=1
         )
     ]
 
 
-def enforce_sentence_punctuation(value: str) -> str:
+def checkEmojis(value: str) -> list[CustomMatch]:
+    return [
+        CustomMatch(
+            rule_id="NO_EMOJIS",
+            message="Using emojis in formal academic writing is unprofessional.",
+            context=value,
+            replacements=[""],
+            offset=match["match_start"],
+            error_length=match["match_end"] - match["match_start"]
+        )
+        for match in emoji.emoji_list(value)
+    ]
+
+
+def enforcePunctuation(value: str) -> str:
     stripped = value.rstrip()
     if not stripped or stripped[-1] in ".!?":
         return value
 
     return f"{stripped}."
 
+
+def enforceNoEmojis(value: str) -> str:
+    return emoji.replace_emoji(value, replace="")
+
+
 class Checker:
     def checkText(self, input):
         text = input
-        matches = tool.check(text) + check_sentence_punctuation(text)
+        matches = tool.check(text) + checkPunctuation(text) + checkEmojis(text)
         return matches
 
     def getCorrectedText(self, text):
-        correctedText = enforce_sentence_punctuation(tool.correct(text))
+        correctedText = enforcePunctuation(enforceNoEmojis(tool.correct(text)))
         return correctedText
