@@ -59,6 +59,8 @@ class PotatoBot(commands.Bot):
                 description=desc,
                 color=16730186
             )
+            
+            LOGGER.info("scolded " + message.author.name)
             await message.reply(embed=embed)
 
 
