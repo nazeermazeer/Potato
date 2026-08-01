@@ -43,13 +43,6 @@ class PotatoBot(commands.Bot):
             desc = "❌ "
             feedbacklen = 20
             for i, correction in enumerate(corrections):
-                # location = " "
-                # correctiondesc = ""
-                # for _ in range(correction.offset):
-                #     location = f"{location} "
-                # for _ in range(correction.error_length):
-                #     location = f"{location}^"
-                # msg = textwrap.fill(correction.message, width=50)
                 if correction.offset <= feedbacklen:
                     msg = content
                     msg = msg[:correction.offset] + "__**" + msg[correction.offset:correction.offset + correction.error_length] + "**__" + msg[correction.offset + correction.error_length:]
