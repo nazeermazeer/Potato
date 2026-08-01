@@ -1,9 +1,9 @@
-import language_tool_python
 from dataclasses import dataclass
-import emoji
 
-tool = language_tool_python.LanguageTool('en-US')
-tool.picky = True
+import emoji
+import requests
+
+LANGUAGETOOL_API_URL = "https://api.languagetool.org/v2/check"
 
 
 @dataclass
@@ -61,11 +61,44 @@ def enforceNoEmojis(value: str) -> str:
 
 
 class Checker:
-    def checkText(self, input):
-        text = input
-        matches = tool.check(text) + checkPunctuation(text) + checkEmojis(text)
-        return matches
+    def _checkLanguageTool(self, text: str) -> list[CustomMatch]:
+        response = requests.post(
+            LANGUAGETOOL_API_URL,
+            data={
+                "text": text,
+                "language": "en-US",
+                "level": "picky",
+            },
+            timeout=10,
+        )
+        response.raise_for_status()
 
-    def getCorrectedText(self, text):
-        correctedText = enforcePunctuation(enforceNoEmojis(tool.correct(text)))
+        return [
+            CustomMatch(
+                rule_id=match["rule"]["id"],
+                message=match["message"],
+                context=match["context"],
+                replacements=[replacement["value"] for replacement in match["replacements"]],
+                offset=match["offset"],
+                error_length=match["length"],
+            )
+            for match in response.json()["matches"]
+        ]
+
+    def checkText(self, input: str) -> list[CustomMatch]:
+        matches = self._checkLanguageTool(input)
+        return matches + checkPunctuation(input) + checkEmojis(input)
+
+    def getCorrectedText(self, text: str) -> str:
+        matches = self._checkLanguageTool(text)
+        corrected_text = text
+        for match in reversed(matches):
+            if match.replacements:
+                corrected_text = (
+                    corrected_text[:match.offset]
+                    + match.replacements[0]
+                    + corrected_text[match.offset + match.error_length:]
+                )
+
+        correctedText = enforcePunctuation(enforceNoEmojis(corrected_text))
         return correctedText
