@@ -98,21 +98,12 @@ async def change_status(status=discord.Status.online) -> None:
     status=status,
     activity=discord.CustomActivity(name=relative_time)
 )
-    
-
-
-@bot.command(name="ping")
-async def ping(ctx: commands.Context) -> None:
-    """Reply with the bot latency."""
-    latency_ms = round(bot.latency * 1000)
-    await ctx.reply(f"Pong! `{latency_ms}ms`")
 
 
 @bot.tree.command(name="hello", description="Say hello to the bot.")
 async def hello(interaction: discord.Interaction) -> None:
     await interaction.response.send_message(
-        f"Hello, {interaction.user.mention}!",
-        allowed_mentions=discord.AllowedMentions.none(),
+        "ok", allowed_mentions=discord.AllowedMentions.none(),
     )
 
 
