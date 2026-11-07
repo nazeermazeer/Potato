@@ -32,41 +32,15 @@ class PotatoBot(commands.Bot):
     async def setup_hook(self) -> None:
         await self.tree.sync()
         
-    async def on_message(self, message):
-        if str(bot.user.id) in message.content:
+    async def on_message(self, message: discord.Message):
+        if str(bot.user.id) in message.content and message.author.id != bot.user.id:
             await message.add_reaction("❌")
             await change_status(discord.Status.dnd)
         elif message.author.id != bot.user.id:
-            checker = Checker()
-            content = discord.utils.escape_markdown(message.content)
-            corrections = checker.checkText(message.content)
-            desc = "❌ "
-            feedbacklen = 20
-            for i, correction in enumerate(corrections):
-                # location = " "
-                # correctiondesc = ""
-                # for _ in range(correction.offset):
-                #     location = f"{location} "
-                # for _ in range(correction.error_length):
-                #     location = f"{location}^"
-                # msg = textwrap.fill(correction.message, width=50)
-                if correction.offset <= feedbacklen:
-                    msg = content
-                    msg = msg[:correction.offset] + "__**" + msg[correction.offset:correction.offset + correction.error_length] + "**__" + msg[correction.offset + correction.error_length:]
-                    msg = "\"" + msg[0:(min(correction.offset + feedbacklen, correction.offset + correction.error_length + feedbacklen))] + "\"..."
-                else:
-                    msg = content
-                    msg = msg[:correction.offset] + "__**" + msg[correction.offset:correction.offset + correction.error_length] + "**__" + msg[correction.offset + correction.error_length:]
-                    msg = "...\"" + msg[int(correction.offset - (feedbacklen)):int(min(correction.offset + feedbacklen + 1, correction.offset + correction.error_length + feedbacklen + 1))] + "\"..."
-                correctiondesc = f"{msg}\n➡️ {correction.message}\n\n"
-                desc += correctiondesc.replace('\n', '\n❌ ')
-            desc += f"\n\"{content}\" 🥀 🔪 😭\n\"{checker.getCorrectedText(content)}\" 🌈 ❤️ 😀"
-            embed = discord.Embed(
-                title=f"{message.author.name}, please double-check your message before sending.",
-                description=desc,
-                color=16730186
-            )
-            await message.reply(embed=embed)
+            text = message.content
+            pos = text.find("im")
+            result = text[pos + len("im") :].lstrip()
+            await message.reply("Hi " + result + "! I'm " + bot.user.mention)
 
 
 bot = PotatoBot()
