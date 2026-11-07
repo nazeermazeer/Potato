@@ -74,11 +74,10 @@ async def change_status(status=discord.Status.online) -> None:
 )
 
 
-@bot.tree.command(name="hello", description="Say hello to the bot.")
-async def hello(interaction: discord.Interaction) -> None:
-    await interaction.response.send_message(
-        "ok", allowed_mentions=discord.AllowedMentions.none(),
-    )
+@bot.tree.command(name="potato", description="do potato")
+async def potato(interaction: discord.Interaction) -> None:
+    await interaction.response.defer()
+    await interaction.delete_original_response()
 
 
 def main() -> None:
