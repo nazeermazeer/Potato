@@ -1,5 +1,4 @@
 import logging
-from checker import Checker
 import os
 from datetime import datetime, timezone
 import discord
@@ -39,8 +38,9 @@ class PotatoBot(commands.Bot):
         elif message.author.id != bot.user.id:
             text = message.content
             pos = text.find("im")
-            result = text[pos + len("im") :].lstrip()
-            await message.reply("Hi " + result + "! I'm " + bot.user.mention)
+            if (pos != -1):
+                result = text[pos + len("im") :].lstrip()
+                await message.reply("Hi " + result + "! I'm " + bot.user.mention)
 
 
 bot = PotatoBot()
