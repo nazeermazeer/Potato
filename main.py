@@ -36,6 +36,7 @@ class PotatoBot(commands.Bot):
         if str(bot.user.id) in message.content and message.author.id != bot.user.id:
             try:
                 await message.add_reaction("❌")
+                LOGGER.info("stop pinging me!")
             except discord.HTTPException as e:
                 LOGGER.exception("failed to add x reaction")
 
