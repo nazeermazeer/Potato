@@ -34,8 +34,17 @@ class PotatoBot(commands.Bot):
         
     async def on_message(self, message: discord.Message):
         if str(bot.user.id) in message.content and message.author.id != bot.user.id:
-            await message.add_reaction("❌")
-            await change_status(discord.Status.dnd)
+            try:
+                await message.add_reaction("❌")
+            except discord.HTTPException as e:
+                LOGGER.exception("failed to add x reaction")
+
+            try:
+                await change_status(discord.Status.dnd)
+            except discord.HTTPException as e:
+                LOGGER.exception("failed to change status")
+            
+            await bot.process_commands(message)
         elif message.author.id != bot.user.id:
             text = message.content
             pos = text.find("im")
@@ -44,7 +53,12 @@ class PotatoBot(commands.Bot):
                 if (num == 50):
                     LOGGER.info("50 = 50; doing a potato...")
                     result = text[pos + len("im") :].lstrip()
-                    await message.reply("Hi " + result + "! I'm " + bot.user.mention)
+                    
+                    try:
+                        await message.reply("Hi " + result + "! I'm " + bot.user.mention)
+                    except discord.HTTPException as e:
+                        LOGGER.exception("failed to do a potato") 
+                    await bot.process_commands(message)
                 else:
                     LOGGER.info(f"{num} != 50")
 
