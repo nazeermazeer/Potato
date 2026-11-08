@@ -1,6 +1,7 @@
 import logging
 import os
 from datetime import datetime, timezone
+import random
 import discord
 from discord.ext import commands
 import humanize
@@ -39,8 +40,13 @@ class PotatoBot(commands.Bot):
             text = message.content
             pos = text.find("im")
             if (pos != -1):
-                result = text[pos + len("im") :].lstrip()
-                await message.reply("Hi " + result + "! I'm " + bot.user.mention)
+                num = random.randint(0, 250)
+                if (num == 125):
+                    LOGGER.info("125 = 125; doing a potato...")
+                    result = text[pos + len("im") :].lstrip()
+                    await message.reply("Hi " + result + "! I'm " + bot.user.mention)
+                else:
+                    LOGGER.info(f"{num} != 125")
 
 
 bot = PotatoBot()
