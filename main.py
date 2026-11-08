@@ -1,7 +1,7 @@
 import logging
-from checker import Checker
 import os
 from datetime import datetime, timezone
+import random
 import discord
 from discord.ext import commands
 import humanize
@@ -39,8 +39,14 @@ class PotatoBot(commands.Bot):
         elif message.author.id != bot.user.id:
             text = message.content
             pos = text.find("im")
-            result = text[pos + len("im") :].lstrip()
-            await message.reply("Hi " + result + "! I'm " + bot.user.mention)
+            if (pos != -1):
+                num = random.randint(0, 250)
+                if (num == 125):
+                    LOGGER.info("125 = 125; doing a potato...")
+                    result = text[pos + len("im") :].lstrip()
+                    await message.reply("Hi " + result + "! I'm " + bot.user.mention)
+                else:
+                    LOGGER.info(f"{num} != 125")
 
 
 bot = PotatoBot()
@@ -74,11 +80,10 @@ async def change_status(status=discord.Status.online) -> None:
 )
 
 
-@bot.tree.command(name="hello", description="Say hello to the bot.")
-async def hello(interaction: discord.Interaction) -> None:
-    await interaction.response.send_message(
-        "ok", allowed_mentions=discord.AllowedMentions.none(),
-    )
+@bot.tree.command(name="potato", description="do potato")
+async def potato(interaction: discord.Interaction) -> None:
+    await interaction.response.defer()
+    await interaction.delete_original_response()
 
 
 def main() -> None:
