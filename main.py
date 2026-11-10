@@ -50,9 +50,9 @@ class PotatoBot(commands.Bot):
             text = message.content
             pos = text.find("im")
             if (pos != -1):
-                num = random.randint(0, 100)
-                if (num == 50):
-                    LOGGER.info("50 = 50; doing a potato...")
+                num = random.randint(0, 50)
+                if (num == 25):
+                    LOGGER.info("25 = 25; doing a potato...")
                     result = text[pos + len("im") :].lstrip()
                     
                     try:
@@ -61,7 +61,7 @@ class PotatoBot(commands.Bot):
                         LOGGER.exception("failed to do a potato") 
                     await bot.process_commands(message)
                 else:
-                    LOGGER.info(f"{num} != 50")
+                    LOGGER.info(f"{num} != 25")
 
 
 bot = PotatoBot()
